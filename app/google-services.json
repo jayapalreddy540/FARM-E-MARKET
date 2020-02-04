@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "849493499749",
+    "firebase_url": "https://farm-e-market.firebaseio.com",
+    "project_id": "farm-e-market",
+    "storage_bucket": "farm-e-market.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849493499749:android:6198034c63f8aa2b638b8c",
+        "android_client_info": {
+          "package_name": "com.example.farm_e_market"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "849493499749-912tn5kg5gek4lqq4lqp9s8gbkholc79.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.farm_e_market",
+            "certificate_hash": "6969735c91c4fd336977481f8b74d349fd6ec4b5"
+          }
+        },
+        {
+          "client_id": "849493499749-2up87iqo61f5oq2m5nmh46isa7mj6k1t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRpikKQ4QR7yop9XZ5XH9077V8QAPRj_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "849493499749-2up87iqo61f5oq2m5nmh46isa7mj6k1t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
