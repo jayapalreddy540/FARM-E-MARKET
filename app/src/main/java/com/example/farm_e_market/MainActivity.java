@@ -1,8 +1,12 @@
 package com.example.farm_e_market;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -13,7 +17,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import android.os.Environment;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,17 +45,20 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
-import java.net.URL;
 
-
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
 
     private String TAG = "MainActivity.java";
     private AppBarConfiguration mAppBarConfiguration;
     private TextView profileName;
     private TextView profileEmail;
+
+    private FirebaseAuth mAuth;
+
+    ProgressDialog mProgressDialog;
 
     private View navHeader;
 
@@ -63,6 +69,8 @@ public class MainActivity extends AppCompatActivity{
 
         // Access a Cloud Firestore instance from your Activity
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        mAuth = FirebaseAuth.getInstance();
 
         /*  APP UPDATE CODE */
 
@@ -83,6 +91,7 @@ public class MainActivity extends AppCompatActivity{
                             if (Integer.parseInt(app_version_code) >= pInfo.versionCode) {
                                 if (Double.parseDouble(app_version_name) > Double.parseDouble(pInfo.versionName)) {
                                     Log.d("Update Message : ", "App Update Available");
+                                    Toast.makeText(MainActivity.this,"App Update Available",Toast.LENGTH_SHORT).show();
                                     try {
                                         FirebaseStorage storage = FirebaseStorage.getInstance();
                                         StorageReference storageRef = storage.getReferenceFromUrl(app_link);
@@ -93,17 +102,26 @@ public class MainActivity extends AppCompatActivity{
 
                                         final Uri uri = FileProvider.getUriForFile(MainActivity.this, "com.example.farm_e_market.fileprovider", file);
 
+                                        mProgressDialog = new ProgressDialog(MainActivity.this);
+                                        mProgressDialog.setMessage("App Update Available Downloading...");
+                                        mProgressDialog.setIndeterminate(true);
+                                        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                        mProgressDialog.setCancelable(true);
+                                        mProgressDialog.show();
                                         storageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                                             @Override
                                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                                Log.d("firebase ", ";local tem file created  created " + file.toString());
+                                                Log.d("firebase ", ";local tem file created " + file.toString());
+                                                Toast.makeText(MainActivity.this,"App Update Downloaded Ready for Installation.",Toast.LENGTH_LONG).show();
+                                                mProgressDialog.dismiss();
                                                 AppUpdate appUpdate =new AppUpdate();
                                                 appUpdate.updateApp(MainActivity.this,uri);
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception exception) {
-                                                Log.d("firebase ", ";local tem file not created  created " + exception.toString());
+                                                Toast.makeText(MainActivity.this,"App Downloading Failed.",Toast.LENGTH_SHORT).show();
+                                                Log.d("firebase ", ";local tem file not created " + exception.toString());
                                             }
                                         });
                                     } catch (Exception e) {
@@ -174,6 +192,8 @@ public class MainActivity extends AppCompatActivity{
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+       // checkInternetConnection();
     }
 
     @Override
@@ -188,6 +208,7 @@ public class MainActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_logout:
+                Toast.makeText(MainActivity.this,"Logging Out... ",Toast.LENGTH_SHORT).show();
                 FirebaseAuth.getInstance().signOut();
                 Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(loginIntent);
@@ -207,4 +228,58 @@ public class MainActivity extends AppCompatActivity{
                 || super.onSupportNavigateUp();
     }
 
+    private void checkInternetConnection(){
+        boolean isConnected=ConnectivityReceiver.isConnected();
+        showSnackBar(isConnected);
+    }
+
+    private void showSnackBar(boolean isConnected) {
+        String message;
+        int color;
+        if(isConnected) {
+            message = "Connected.";
+            color = Color.GREEN;
+        }else {
+            message="No Internet Connection.";
+            color=Color.RED;
+        }
+
+        Log.d("connected to network : ",isConnected+"");
+
+        Snackbar snackbar=Snackbar.make(findViewById(R.id.nav_view),message,Snackbar.LENGTH_LONG);
+
+        View view =snackbar.getView();
+        TextView textView=view.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(color);
+        snackbar.show();
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected){
+        showSnackBar(isConnected);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser == null) {
+            Intent mainIntent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(mainIntent);
+            finish();
+        }
+        final IntentFilter intentFilter =new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+
+        ConnectivityReceiver connectivityReceiver=new ConnectivityReceiver();
+        registerReceiver(connectivityReceiver,intentFilter);
+
+        MyApp.getInstance().setConnectivityListener(this);
+    }
 }

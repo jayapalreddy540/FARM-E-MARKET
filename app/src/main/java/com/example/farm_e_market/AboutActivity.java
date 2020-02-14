@@ -1,10 +1,8 @@
 package com.example.farm_e_market;
 
-import com.example.farm_e_market.BuildConfig;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;

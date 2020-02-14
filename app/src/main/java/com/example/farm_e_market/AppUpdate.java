@@ -1,6 +1,5 @@
 package com.example.farm_e_market;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +38,7 @@ public class AppUpdate extends FileProvider {
                 install.setDataAndType(uri, "application/vnd.android.package-archive");
                 context.startActivity(install);
             }
+            Toast.makeText(context,"App Updated Successfully",Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Log.d("Install Exception",e.toString());
         }
