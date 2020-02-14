@@ -17,12 +17,19 @@
     <string name="nav_header_desc">Navigation header</string>
 
 
-    <string name="action_settings">Logout</string>
-
+    <string name="action_logout">Logout</string>
+    <string name="action_version">About</string>
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_tools">Settings</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Contact</string>
+
+    <string name="downloading">Downloading...</string>
+    <string name="title_file_download">APK is downloading</string>
+    <string name="storage_access_required">Storage access is required to downloading the file.</string>
+    <string name="storage_permission_denied">Storage permission request was denied.</string>
+    <string name="ok">OK</string>
+
 </resources>

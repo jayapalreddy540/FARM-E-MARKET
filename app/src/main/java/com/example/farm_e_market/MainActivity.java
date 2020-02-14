@@ -1,16 +1,25 @@
 package com.example.farm_e_market;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.os.Environment;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -19,6 +28,12 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -26,11 +41,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
-import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import java.io.File;
+import java.net.URL;
 
+
+public class MainActivity extends AppCompatActivity{
+
+    private String TAG = "MainActivity.java";
     private AppBarConfiguration mAppBarConfiguration;
     private TextView profileName;
     private TextView profileEmail;
@@ -41,6 +60,75 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Access a Cloud Firestore instance from your Activity
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        /*  APP UPDATE CODE */
+
+        DocumentReference docRef = db.collection("app").document("current_version");
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        String app_version_code=document.get("app_version_code").toString();
+                        String app_version_name=document.get("app_version_name").toString();
+                        String app_link=document.get("app_link").toString();
+                            Log.d("remote_app_version : ",app_version_code+"."+app_version_name);
+                        try {
+                            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                            if (Integer.parseInt(app_version_code) >= pInfo.versionCode) {
+                                if (Double.parseDouble(app_version_name) > Double.parseDouble(pInfo.versionName)) {
+                                    Log.d("Update Message : ", "App Update Available");
+                                    try {
+                                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                                        StorageReference storageRef = storage.getReferenceFromUrl(app_link);
+
+                                        String fileName="FARM_E_MARKET.apk";
+                                        File dir=getFilesDir();
+                                        final File file=new File(dir,fileName);
+
+                                        final Uri uri = FileProvider.getUriForFile(MainActivity.this, "com.example.farm_e_market.fileprovider", file);
+
+                                        storageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                            @Override
+                                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                                Log.d("firebase ", ";local tem file created  created " + file.toString());
+                                                AppUpdate appUpdate =new AppUpdate();
+                                                appUpdate.updateApp(MainActivity.this,uri);
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+                                                Log.d("firebase ", ";local tem file not created  created " + exception.toString());
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        Log.d(TAG, e.toString());
+                                    }
+                                }
+                            }
+                            String version = pInfo.versionCode + "." + pInfo.versionName;
+                            Log.d("versions", "app_verison : " + version + " remote_app_version : " + Integer.parseInt(app_version_code) + "." + Double.parseDouble(app_version_name));
+                        } catch (PackageManager.NameNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+
+
+        /*  END OF APP UPDATE */
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -56,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
 
         navHeader = navigationView.getHeaderView(0);
-        profileName=(TextView) navHeader.findViewById(R.id.profileName);
-        profileEmail=(TextView)navHeader.findViewById(R.id.profileEmail);
+        profileName = (TextView) navHeader.findViewById(R.id.profileName);
+        profileEmail = (TextView) navHeader.findViewById(R.id.profileEmail);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             // Name, email address, and profile photo Url
@@ -98,14 +186,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
-                Intent mainIntent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(mainIntent);
+                Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(loginIntent);
                 finish();
                 return true;
-
+            case R.id.action_version:
+                Intent aboutIntent = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(aboutIntent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -116,4 +206,5 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
 }
