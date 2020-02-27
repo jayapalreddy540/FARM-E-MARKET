@@ -7,16 +7,16 @@ public class Product {
     int quantity;
     double latitude;
     double longitude;
-    String image_url;
+    String image;
 
-    public Product(String category, String name,int price, int quantity, double latitude, double longitude, String image_url) {
+    public Product(String category, String name,int price, int quantity, double latitude, double longitude, String image) {
         this.category = category;
         this.name=name;
         this.price = price;
         this.quantity = quantity;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.image_url = image_url;
+        this.image = image;
     }
 
     public String getName() {
@@ -67,11 +67,11 @@ public class Product {
         this.longitude = longitude;
     }
 
-    public String getImage_url() {
-        return image_url;
+    public String getImage() {
+        return image;
     }
 
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
+    public void setImage(String image_url) {
+        this.image = image;
     }
 }

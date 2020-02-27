@@ -7,10 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -47,20 +43,11 @@ public class GalleryFragment extends Fragment {
     private FirebaseAuth mAuth;
 
     int position=0;
-    GridView simpleGrid;
     String category=null;
-    String[] images;
-    String[] products;
-    Integer[] prices;
-    String[] id;
+
     ArrayList<String> Categories;
 
-    private List<String> productNames = new ArrayList<>();
-    private List<String> productImages=new ArrayList<>();
-    private List<Integer> productPrice=new ArrayList<>();
-    private List<String> productId=new ArrayList<>();
-
-    private List<Item> itemList = new ArrayList<>();
+    private List<Commodity> commodities=new ArrayList<>();
     private RecyclerView recyclerview;
     private MyAdapter mAdapter;
 
@@ -70,11 +57,12 @@ public class GalleryFragment extends Fragment {
         //final TextView textView = root.findViewById(R.id.text_gallery);
 
         recyclerview=(RecyclerView)root.findViewById(R.id.recycler_view);
-        mAdapter = new MyAdapter(itemList);
+        mAdapter = new MyAdapter(commodities);
         RecyclerView.LayoutManager mLayoutManger = new LinearLayoutManager(getContext());
         recyclerview.setLayoutManager(mLayoutManger);
         recyclerview.setItemAnimator(new DefaultItemAnimator());
         recyclerview.setAdapter(mAdapter);
+
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
@@ -107,7 +95,6 @@ public class GalleryFragment extends Fragment {
             }
         });
 
-
         return root;
 }
 
@@ -121,61 +108,28 @@ public class GalleryFragment extends Fragment {
                     .setPersistenceEnabled(true)
                     .build();
             db.setFirestoreSettings(settings);
-            db.collectionGroup("products")
-                    .whereEqualTo("category", category)
-                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable QuerySnapshot value,
-                                            @Nullable FirebaseFirestoreException e) {
-                            if (e != null) {
-                                Log.w("GalleryFragment", "Listen failed.", e);
-                                return;
-                            }
-                           // Log.d("query", value.getDocuments().toString());
+        Query query = FirebaseFirestore.getInstance()
+                .collectionGroup("products")
+                .whereEqualTo("category",category);
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.d("error",e.toString());
+                    return;
+                }
 
-                            for (QueryDocumentSnapshot doc : value) {
-                                if (doc.get("name") != null) {
-
-                                    productId.add(doc.getId());
-                                    productNames.add(doc.getString("name"));
-                                    productImages.add(doc.getString("image_url"));
-                                    productPrice.add(Integer.parseInt(doc.get("price").toString()));
-                                }
-                            }
-
-                            images=new String[productImages.size()];
-                            images=productImages.toArray(images);
-                            Log.d("images", String.valueOf(images.length));
-                            //Log.d("GalleryFragment", "products: " + products);
-
-                            products=new String[productNames.size()];
-                            products=productNames.toArray(products);
-                            Log.d("products",String.valueOf(products.length));
-
-                            prices=new Integer[productPrice.size()];
-                            prices=productPrice.toArray(prices);
-                            Log.d("prices",String.valueOf(prices.length));
-
-                            id=new String[productId.size()];
-                            id=productId.toArray(id);
-
-                            if(products.length>0) {
-                                for(int i=0;i<products.length;i++){
-                                    Item product = new Item();
-                                    product.setName(products[i]);
-                                    product.setImage(images[i]);
-                                    product.setPrice(prices[i]);
-                                    product.setId(id[i]);
-                                    itemList.add(product);
-                                }
-                                mAdapter.notifyDataSetChanged();
-                                recyclerview.setAdapter(mAdapter);
-                            }
-                            else{
-                                Toast.makeText(getContext(),"No items found",Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                // Convert query snapshot to a list of chats
+                commodities = snapshot.toObjects(Commodity.class);
+                Log.d("products",commodities.toString());
+                mAdapter = new MyAdapter(commodities);
+                mAdapter.notifyDataSetChanged();
+                recyclerview.setAdapter(mAdapter);
+                // Update UI
+                // ...
+            }
+        });
     }
 
 }

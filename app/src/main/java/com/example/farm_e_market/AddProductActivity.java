@@ -78,7 +78,6 @@ public class AddProductActivity extends AppCompatActivity implements LocationLis
     private String TAG="AddProductActivity";
 
     protected LocationManager locationManager;
-    protected LocationListener locationListener;
 
     private double latitude=0.0;
     private double longitude=0.0;
