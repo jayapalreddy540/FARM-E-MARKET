@@ -7,15 +7,15 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.farm_e_market.ui.home.HomeFragment"
+        android:name="com.example.farm_e_market.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.farm_e_market.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_myproducts"
+        android:name="com.example.farm_e_market.MyProductsFragment"
+        android:label="@string/menu_myproducts"
+        tools:layout="@layout/fragment_myproducts" />
 
     <fragment
         android:id="@+id/nav_slideshow"
@@ -31,13 +31,13 @@
 
     <fragment
         android:id="@+id/nav_share"
-        android:name="com.example.farm_e_market.ui.share.ShareFragment"
+        android:name="com.example.farm_e_market.ShareFragment"
         android:label="@string/menu_share"
         tools:layout="@layout/fragment_share" />
 
     <fragment
-        android:id="@+id/nav_send"
-        android:name="com.example.farm_e_market.ui.send.SendFragment"
+        android:id="@+id/nav_feedback"
+        android:name="com.example.farm_e_market.ui.Feedback.SendFragment"
         android:label="@string/menu_send"
         tools:layout="@layout/fragment_send" />
 </navigation>
