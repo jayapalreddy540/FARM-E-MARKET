@@ -52,10 +52,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
@@ -103,45 +99,46 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
                                 Log.d("remote_app_version : ",app_version_code+"."+app_version_name);
                             try {
                                 PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-                                if (Integer.parseInt(app_version_code) >= pInfo.versionCode) {
-                                    if (Double.parseDouble(app_version_name) > Double.parseDouble(pInfo.versionName)) {
-                                        Log.d("Update Message : ", "App Update Available");
-                                        Toast.makeText(MainActivity.this,"App Update Available",Toast.LENGTH_SHORT).show();
-                                        try {
-                                            FirebaseStorage storage = FirebaseStorage.getInstance();
-                                            StorageReference storageRef = storage.getReferenceFromUrl(app_link);
+                                if ((Integer.parseInt(app_version_code) == pInfo.versionCode && Double.parseDouble(app_version_name) > Double.parseDouble(pInfo.versionName))
+                                    ||Integer.parseInt(app_version_code) >pInfo.versionCode ) {
+                                    Log.d("Update Message : ", "App Update Available");
+                                    Toast.makeText(MainActivity.this, "App Update Available", Toast.LENGTH_SHORT).show();
+                                    try {
+                                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                                        StorageReference storageRef = storage.getReferenceFromUrl(app_link);
 
-                                            String fileName="FARM_E_MARKET.apk";
-                                            File dir=getFilesDir();
-                                            final File file=new File(dir,fileName);
+                                        String fileName = "FARM_E_MARKET.apk";
+                                        File dir = getFilesDir();
+                                        final File file = new File(dir, fileName);
 
-                                            final Uri uri = FileProvider.getUriForFile(MainActivity.this, "com.example.farm_e_market.fileprovider", file);
+                                        final Uri uri = FileProvider.getUriForFile(MainActivity.this, "com.example.farm_e_market.fileprovider", file);
 
-                                            mProgressDialog = new ProgressDialog(MainActivity.this);
-                                            mProgressDialog.setMessage("App Update Available Downloading...");
-                                            mProgressDialog.setIndeterminate(true);
-                                            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                                            mProgressDialog.setCancelable(true);
-                                            mProgressDialog.show();
-                                            storageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                                @Override
-                                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                                    Log.d("firebase ", ";local tem file created " + file.toString());
-                                                    Toast.makeText(MainActivity.this,"App Update Downloaded Ready for Installation.",Toast.LENGTH_LONG).show();
-                                                    mProgressDialog.dismiss();
-                                                    AppUpdate appUpdate =new AppUpdate();
-                                                    appUpdate.updateApp(MainActivity.this,uri);
-                                                }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception exception) {
-                                                    Toast.makeText(MainActivity.this,"App Downloading Failed.",Toast.LENGTH_SHORT).show();
-                                                    Log.d("firebase ", ";local tem file not created " + exception.toString());
-                                                }
-                                            });
-                                        } catch (Exception e) {
-                                            Log.d(TAG, e.toString());
-                                        }
+                                        mProgressDialog = new ProgressDialog(MainActivity.this);
+                                        mProgressDialog.setMessage("App Update Available Downloading...");
+                                        mProgressDialog.setIndeterminate(true);
+                                        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                        mProgressDialog.setCancelable(true);
+                                        mProgressDialog.show();
+                                        storageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                            @Override
+                                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                                Log.d("firebase ", ";local tem file created " + file.toString());
+                                                Toast.makeText(MainActivity.this, "App Update Downloaded Ready for Installation.", Toast.LENGTH_LONG).show();
+                                                mProgressDialog.dismiss();
+                                                AppUpdate appUpdate = new AppUpdate();
+                                                appUpdate.updateApp(MainActivity.this, uri);
+
+                                                Toast.makeText(MainActivity.this,"App Updated Successfully",Toast.LENGTH_LONG).show();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+                                                Toast.makeText(MainActivity.this, "App Downloading Failed.", Toast.LENGTH_SHORT).show();
+                                                Log.d("firebase ", ";local tem file not created " + exception.toString());
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        Log.d(TAG, e.toString());
                                     }
                                 }
                                 String version = pInfo.versionCode + "." + pInfo.versionName;
@@ -203,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_myproducts, R.id.nav_slideshow,
+                R.id.nav_home, R.id.nav_myproducts,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_feedback)
                 .setDrawerLayout(drawer)
                 .build();

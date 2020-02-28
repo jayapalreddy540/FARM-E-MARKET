@@ -2,6 +2,8 @@ package com.example.farm_e_market;
 
 import android.util.Log;
 
+import com.google.firebase.Timestamp;
+
 public class Commodity {
     private String category;
     private String image;
@@ -11,6 +13,15 @@ public class Commodity {
     private String name;
     private int price;
     private int quantity;
+    private Timestamp timestamp;
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
 
     public Commodity() {
     }

@@ -12,13 +12,7 @@ import android.widget.GridView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
-
-import com.example.farm_e_market.CustomAdapter;
-import com.example.farm_e_market.GalleryFragment;
-import com.example.farm_e_market.R;
 
 public class HomeFragment extends Fragment {
 

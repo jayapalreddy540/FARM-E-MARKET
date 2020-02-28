@@ -1,5 +1,8 @@
 package com.example.farm_e_market;
 
+import com.google.firebase.firestore.ServerTimestamp;
+import java.util.Date;
+
 public class Product {
     String category;
     String name;
@@ -8,8 +11,17 @@ public class Product {
     double latitude;
     double longitude;
     String image;
+    @ServerTimestamp Date timestamp;
 
-    public Product(String category, String name,int price, int quantity, double latitude, double longitude, String image) {
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Product(String category, String name, int price, int quantity, double latitude, double longitude, String image) {
         this.category = category;
         this.name=name;
         this.price = price;

@@ -10,7 +10,7 @@ exports.addProduct = functions.firestore
         const newValue = snap.data();
         const name=newValue.name;
         const category = newValue.category;
-        const image=newValue.image_url;
+        const image=newValue.image;
 
 //const getInstanceIdPromise = functions.firestore.ref(`/app/tokens/tokenArray`).once('value');
     let getInstanceIds=[];
