@@ -5,14 +5,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
+import android.widget.TextView;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class CustomAdapter extends BaseAdapter {
     Context context;
     int logos[];
+    String category[];
     LayoutInflater inflter;
-    public CustomAdapter(Context applicationContext, int[] logos) {
+    public CustomAdapter(Context applicationContext, int[] logos,String[] category) {
         this.context = applicationContext;
         this.logos = logos;
+        this.category=category;
         inflter = (LayoutInflater.from(applicationContext));
     }
     @Override
@@ -30,8 +35,10 @@ public class CustomAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         view = inflter.inflate(R.layout.custom_gridview, null); // inflate the layout
-        ImageView icon = (ImageView) view.findViewById(R.id.icon); // get the reference of ImageView
+        CircleImageView icon = (CircleImageView) view.findViewById(R.id.icon); // get the reference of ImageView
+        TextView name=(TextView)view.findViewById(R.id.name);
         icon.setImageResource(logos[i]); // set logo images
+        name.setText(category[i]);
         return view;
     }
 }

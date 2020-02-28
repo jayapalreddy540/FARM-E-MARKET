@@ -8,10 +8,11 @@
     android:focusable="true"
     android:layout_margin="10dp"
     android:clickable="true"
+    android:outlineAmbientShadowColor="@color/colorPrimary"
     android:background="?android:attr/selectableItemBackground"
     android:orientation="vertical">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/icon"
         android:layout_width="120dp"
         android:layout_height="120dp"
@@ -27,6 +28,8 @@
         android:textColor="#770033"
         android:textSize="24dp"
         app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintVertical_bias="0.3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/subtitle"
@@ -41,6 +44,9 @@
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintVertical_bias="0.3"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toBottomOf="@+id/title" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

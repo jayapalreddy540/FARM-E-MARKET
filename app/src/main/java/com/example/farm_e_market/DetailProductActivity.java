@@ -1,7 +1,6 @@
 package com.example.farm_e_market;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -25,9 +23,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 public class DetailProductActivity extends AppCompatActivity {
 
@@ -96,8 +92,11 @@ public class DetailProductActivity extends AppCompatActivity {
             directionBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String uri = String.format(Locale.ENGLISH, "geo:%f,%f", latitude, longitude);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                   // String uri = String.format(Locale.ENGLISH, "geo:%f,%f", latitude, longitude);
+                    //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    //startActivity(intent);
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:"+latitude+","+longitude+"?q="+latitude+","+longitude+"(Farmer's Location)"));
                     startActivity(intent);
                 }
             });

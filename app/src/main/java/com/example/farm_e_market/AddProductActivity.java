@@ -60,12 +60,14 @@ import java.util.ArrayList;
 
 import java.util.UUID;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class AddProductActivity extends AppCompatActivity implements LocationListener {
 
     private FirebaseAuth mAuth;
     private EditText nameEditText,priceEditText,quantityEditText;
     private Button btnAdd;
-    private ImageView imageView;
+    private CircleImageView imageView;
     private EditText locationDetails;
     private ImageButton imageButton;
     private String selectedCategory = "No Item";
@@ -96,7 +98,7 @@ public class AddProductActivity extends AppCompatActivity implements LocationLis
         priceEditText=(EditText)findViewById(R.id.price);
         quantityEditText=(EditText)findViewById(R.id.quantity);
         btnAdd=(Button)findViewById(R.id.addBtn);
-        imageView=(ImageView)findViewById(R.id.image);
+        imageView=(CircleImageView) findViewById(R.id.image);
         imageButton=(ImageButton) findViewById(R.id.location);
         locationDetails=(EditText)findViewById(R.id.locationText);
 
@@ -275,9 +277,9 @@ public class AddProductActivity extends AppCompatActivity implements LocationLis
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
         }
 
-        Toast.makeText(AddProductActivity.this,"Please turn on GPS/Location",Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivity(intent);
+       // Toast.makeText(AddProductActivity.this,"Please turn on GPS/Location",Toast.LENGTH_SHORT).show();
+        //Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        //startActivity(intent);
     }
 
     @Override

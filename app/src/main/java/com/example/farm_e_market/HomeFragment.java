@@ -14,40 +14,75 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+
+import java.util.ArrayList;
+
 public class HomeFragment extends Fragment {
 
     GridView simpleGrid;
     int logos[] = {R.drawable.logo, R.drawable.ic_launcher_invert, R.drawable.images, R.drawable.home,
             R.drawable.ic_launcher, R.drawable.images, R.drawable.logo, R.drawable.ic_launcher_invert};
+    ArrayList<String> Categories;
+    String[] category;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
+        final View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        simpleGrid = (GridView)root.findViewById(R.id.gridview); // init GridView
-        // Create an object of CustomAdapter and set Adapter to GirdView
-        CustomAdapter customAdapter = new CustomAdapter(getContext(), logos);
-        simpleGrid.setAdapter(customAdapter);
-        // implement setOnItemClickListener event on GridView
-        simpleGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+
+        DocumentReference docRef = db.collection("app").document("products");
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // set an Intent to Another Activity
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        if (document.exists()) {
+                            Categories = (ArrayList<String>) document.get("categories");
+                            category = Categories.toArray(new String[Categories.size()]);
 
-                //TODO send position to GalleryFragment
-                Log.d("position", String.valueOf(position));
-                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt("position", position);
-                editor.apply();
+                            simpleGrid = (GridView)root.findViewById(R.id.gridview); // init GridView
+                            // Create an object of CustomAdapter and set Adapter to GirdView
+                            CustomAdapter customAdapter = new CustomAdapter(getContext(), logos,category);
+                            simpleGrid.setAdapter(customAdapter);
+                            // implement setOnItemClickListener event on GridView
+                            simpleGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    // set an Intent to Another Activity
 
-                final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.nav_host_fragment, new GalleryFragment(), "NewFragmentTag");
-                ft.addToBackStack(null);
-                ft.commit();
+                                    //TODO send position to GalleryFragment
+                                    Log.d("position", String.valueOf(position));
+                                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPref.edit();
+                                    editor.putInt("position", position);
+                                    editor.apply();
 
+                                    final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                    ft.replace(R.id.nav_host_fragment, new GalleryFragment(), "NewFragmentTag");
+                                    ft.addToBackStack(null);
+                                    ft.commit();
+
+                                }
+                            });
+
+                        }
+                    }
+                }
             }
         });
+
 
         return root;
     }

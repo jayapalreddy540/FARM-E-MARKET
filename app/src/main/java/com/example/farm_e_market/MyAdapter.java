@@ -1,12 +1,10 @@
 package com.example.farm_e_market;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,21 +15,21 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private List<Commodity> itemList;
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title, subtitle;
-        public ImageView icon;
+        public CircleImageView icon;
         private ConstraintLayout main;
         public MyViewHolder(final View parent) {
             super(parent);
             title = (TextView) parent.findViewById(R.id.title);
             subtitle = (TextView) parent.findViewById(R.id.subtitle);
-            icon = (ImageView) parent.findViewById(R.id.icon);
+            icon = (CircleImageView) parent.findViewById(R.id.icon);
             main = (ConstraintLayout) parent.findViewById(R.id.main);
             main.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -64,15 +62,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         String image=row.getImage();
         holder.title.setText(name);
         holder.subtitle.setText("Rs. "+String.valueOf(price)+"/-");
-        holder.icon.setImageResource(R.drawable.logo);
 
-       /* FirebaseStorage storage = FirebaseStorage.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference gsReference = storage.getReferenceFromUrl(image);
         // Load the image using Glide
-        Glide.with(this)
-                .load(gsReference)
-                .into(holder.icon );
-        */
+        Glide.with(holder.icon.getContext())
+                .load(gsReference).placeholder(R.drawable.logo)
+                .into(holder.icon);
+
     }
     @Override
     public int getItemCount() {
