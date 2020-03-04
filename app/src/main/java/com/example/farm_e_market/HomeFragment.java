@@ -26,8 +26,8 @@ import java.util.ArrayList;
 public class HomeFragment extends Fragment {
 
     GridView simpleGrid;
-    int logos[] = {R.drawable.logo, R.drawable.ic_launcher_invert, R.drawable.images, R.drawable.home,
-            R.drawable.ic_launcher, R.drawable.images, R.drawable.logo, R.drawable.ic_launcher_invert};
+    int logos[] = {R.drawable.agricultural_crops, R.drawable.organic_vegetables, R.drawable.seeds, R.drawable.dairy_products,
+            R.drawable.flowers, R.drawable.fruits, R.drawable.plants, R.drawable.poultry};
     ArrayList<String> Categories;
     String[] category;
 

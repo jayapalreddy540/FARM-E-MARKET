@@ -4,16 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,10 +53,23 @@ public class RegisterActivity extends AppCompatActivity {
                 username = usernameEditText.getText().toString();
                 email = emailEditText.getText().toString();
                 password = passwordEditText.getText().toString();
+                String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
                 if (email.equals("") || password.equals("") || username.equals("")) {
-                        Toast.makeText(RegisterActivity.this, "Please fill the details.",
-                                Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(RegisterActivity.this, "Please fill the details.",
+                       //         Toast.LENGTH_SHORT).show();
+                    Snackbar snackbar = Snackbar
+                            .make(v, "Enter all the Details.", Snackbar.LENGTH_LONG);
+                    snackbar.setTextColor(Color.WHITE);
+                    snackbar.setBackgroundTint(Color.RED);
+                    snackbar.show();
+                }
+                else if(!email.matches(emailPattern)){
+                    Snackbar snackbar = Snackbar
+                            .make(v, "Enter a valid Email Address.", Snackbar.LENGTH_SHORT);
+                    snackbar.setTextColor(Color.WHITE);
+                    snackbar.setBackgroundTint(Color.RED);
+                    snackbar.show();
                 }
                 else{
                     loadingProgressBar.setVisibility(View.VISIBLE);

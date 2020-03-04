@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -32,6 +34,9 @@ public class DetailProductActivity extends AppCompatActivity {
     private ImageView imageView;
     private double longitude=0.0;
     private double latitude=0.0;
+    private String imageUrl;
+    private boolean isImageFitToScreen;
+    private String mobile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,8 @@ public class DetailProductActivity extends AppCompatActivity {
         buyBtn=(Button)findViewById(R.id.buy);
         imageView=(ImageView)findViewById(R.id.image);
 
+
+        final FirebaseStorage storage = FirebaseStorage.getInstance();
 
         Intent intent=getIntent();
         if(intent.hasExtra("image")) {
@@ -67,7 +74,7 @@ public class DetailProductActivity extends AppCompatActivity {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     Log.d("DetailProductActivity", document.getId() + " => " + document.getData());
                                     nameText.setText(document.get("name").toString());
-                                    priceText.setText("Price : "+document.get("price"));
+                                    priceText.setText("Rs."+document.get("price")+"/-");
                                     quantityText.setText("Quantity : "+document.get("quantity"));
                                     Timestamp timestamp=(Timestamp)document.get("timestamp");
                                     Date date=timestamp.toDate();
@@ -75,8 +82,9 @@ public class DetailProductActivity extends AppCompatActivity {
                                     //imageView.setImageURI((Uri) document.get("image"));
                                     longitude=document.getDouble("longitude");
                                     latitude=document.getDouble("latitude");
-                                    FirebaseStorage storage = FirebaseStorage.getInstance();
-                                    StorageReference gsReference = storage.getReferenceFromUrl(document.get("image").toString());
+                                    imageUrl=document.get("image").toString();
+                                    mobile=document.get("mobile").toString();
+                                    StorageReference gsReference = storage.getReferenceFromUrl(imageUrl);
                                     // Load the image using Glide
                                     Glide.with( DetailProductActivity.this)
                                             .load(gsReference)
@@ -89,6 +97,21 @@ public class DetailProductActivity extends AppCompatActivity {
                         }
                     });
 
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(isImageFitToScreen) {
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                    }else{
+                        isImageFitToScreen=true;
+                        imageView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                    }
+                }
+            });
             directionBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -97,6 +120,14 @@ public class DetailProductActivity extends AppCompatActivity {
                     //startActivity(intent);
 
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:"+latitude+","+longitude+"?q="+latitude+","+longitude+"(Farmer's Location)"));
+                    startActivity(intent);
+                }
+            });
+            buyBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent=new Intent(DetailProductActivity.this,BuyActivity.class);
+                    intent.putExtra("mobile",mobile);
                     startActivity(intent);
                 }
             });

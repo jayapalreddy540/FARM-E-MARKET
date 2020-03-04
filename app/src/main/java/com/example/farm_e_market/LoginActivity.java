@@ -2,6 +2,7 @@ package com.example.farm_e_market;
 
 import androidx.annotation.NonNull;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,14 +44,17 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
 
                 email=emailEditText.getText().toString();
                 password=passwordEditText.getText().toString();
                 Log.d(TAG,"email : "+email);
                 if(email.equals("")||password.equals("")){
-                    Toast.makeText(LoginActivity.this, "Please fill the details.",
-                            Toast.LENGTH_SHORT).show();
+                    Snackbar snackbar = Snackbar
+                            .make(v, "Enter all the Details.", Snackbar.LENGTH_LONG);
+                    snackbar.setTextColor(Color.WHITE);
+                    snackbar.setBackgroundTint(Color.RED);
+                    snackbar.show();
                 }
                 else {
                     loadingProgressBar.setVisibility(View.VISIBLE);
@@ -70,8 +75,11 @@ public class LoginActivity extends AppCompatActivity {
                                             finish();
                                         }
                                         else{
-                                            Toast.makeText(LoginActivity.this, "Please Verify Your Email for Authentication.",
-                                                    Toast.LENGTH_SHORT).show();
+                                            Snackbar snackbar = Snackbar
+                                                    .make(v, "Please Verify Your Email for Authentication.", Snackbar.LENGTH_LONG);
+                                            snackbar.setTextColor(Color.WHITE);
+                                            snackbar.setBackgroundTint(Color.GREEN);
+                                            snackbar.show();
                                         }
 
                                     } else {
