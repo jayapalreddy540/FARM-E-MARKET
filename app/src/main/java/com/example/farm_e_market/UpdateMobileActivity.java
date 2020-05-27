@@ -1,19 +1,15 @@
 package com.example.farm_e_market;
 
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -29,17 +25,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-public class UpdateMobileFragment extends Fragment {
+public class UpdateMobileActivity extends AppCompatActivity {
     EditText mobileEditText;
     Button update;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View root= inflater.inflate(R.layout.update_mobile_fragment, container, false);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.update_mobile_fragment);
 
-        mobileEditText=(EditText)root.findViewById(R.id.mobile);
-        update=(Button)root.findViewById(R.id.update);
+        mobileEditText=(EditText)findViewById(R.id.mobile);
+        update=(Button)findViewById(R.id.update);
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -74,23 +70,22 @@ public class UpdateMobileFragment extends Fragment {
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-                                                            Toast.makeText(getActivity(),"mobile number updated",Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(UpdateMobileActivity.this,"mobile number updated",Toast.LENGTH_SHORT).show();
 
-                                                            final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                                                            ft.replace(R.id.nav_host_fragment, new SettingsFragment(), "NewFragmentTag");
-                                                            ft.addToBackStack(null);
-                                                            ft.commit();
+                                                            Intent intent=new Intent(UpdateMobileActivity.this,MainActivity.class);
+                                                            startActivity(intent);
+                                                            finish();
                                                         }
                                                     }).addOnFailureListener(new OnFailureListener() {
                                                 @Override
                                                 public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(getContext(),"Updation failed",Toast.LENGTH_SHORT).show();
-                                                    Log.d("UpdateMobileFragment",e.getMessage());
+                                                    Toast.makeText(UpdateMobileActivity.this,"Updation failed",Toast.LENGTH_SHORT).show();
+                                                    Log.d("UpdateMobileActivity",e.getMessage());
                                                 }
                                             });
                                         }
                                     } else {
-                                        //Log.d(TAG, "Error getting documents: ", task.getException());
+                                        Log.d("UpdateMobileActivity", "Error getting documents: ", task.getException());
                                     }
                                 }
                             });
@@ -98,12 +93,7 @@ public class UpdateMobileFragment extends Fragment {
                 }
             }
         });
-        return root;
-    }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 
 }

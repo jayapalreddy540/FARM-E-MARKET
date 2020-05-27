@@ -59,6 +59,8 @@
         <activity
             android:name=".AboutActivity"
             android:label="About" />
+        <activity android:name=".UpdateMobileActivity"
+            android:label="UpdateMobileNumber"/>
 
         <service
             android:name=".MyFirebaseMessagingService"

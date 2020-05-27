@@ -7,6 +7,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -44,6 +48,8 @@ public class GalleryFragment extends Fragment {
     private List<Commodity> commodities=new ArrayList<>();
     private RecyclerView recyclerview;
     private MyAdapter mAdapter;
+    private String selectedOption="timestamp";
+    private String selectedOption1="ASCENDING";
 
     private ConstraintLayout main;
 
@@ -69,6 +75,24 @@ public class GalleryFragment extends Fragment {
 
         final FirebaseUser currentUser = mAuth.getCurrentUser();
 
+        final Spinner spinner = (Spinner)root.findViewById(R.id.sort);
+        String[] sortOptions={"timestamp","name","price"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_item,sortOptions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        final Spinner spinner1 = (Spinner)root.findViewById(R.id.sortAscDesc);
+        String[] ascOptions={"ASCENDING","DESCENDING"};
+
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_item,ascOptions);
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner1.setAdapter(adapter1);
+
+
+
         DocumentReference docRef = db.collection("app").document("products");
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -85,6 +109,33 @@ public class GalleryFragment extends Fragment {
                             Log.d("category : ", category);
                             getData(category);
 
+                            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    selectedOption = parent.getItemAtPosition(position).toString();
+                                    Toast.makeText(getContext(),"sort options applied",Toast.LENGTH_SHORT).show();
+                                    getData(category);
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
+
+                                }
+                            });
+                            spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    selectedOption1 = parent.getItemAtPosition(position).toString();
+                                    Toast.makeText(getContext(),"sort options applied",Toast.LENGTH_SHORT).show();
+                                    getData(category);
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
+
+                                }
+                            });
+
                         }
                     }
                 }
@@ -98,33 +149,43 @@ public class GalleryFragment extends Fragment {
 
     private void getData(String category) {
 
-            Log.d("category:", category);
-            final FirebaseFirestore db = FirebaseFirestore.getInstance();
-            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                    .setPersistenceEnabled(true)
-                    .build();
-            db.setFirestoreSettings(settings);
-        Query query = FirebaseFirestore.getInstance()
-                .collectionGroup("products")
-                .whereEqualTo("category",category);
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot snapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.d("error",e.toString());
-                    return;
-                }
-
-                // Convert query snapshot to a list of chats
-                commodities = snapshot.toObjects(Commodity.class);
-                mAdapter = new MyAdapter(commodities);
-                mAdapter.notifyDataSetChanged();
-                recyclerview.setAdapter(mAdapter);
-                // Update UI
-                // ...
+        Log.d("category:", category);
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+        Query query;
+        if (!selectedOption.equals("")) {
+            if (selectedOption1.equals("ASCENDING")) {
+                query = FirebaseFirestore.getInstance()
+                        .collectionGroup("products")
+                        .whereEqualTo("category", category)
+                        .orderBy(selectedOption, Query.Direction.ASCENDING);
+            } else {
+                query = FirebaseFirestore.getInstance()
+                        .collectionGroup("products")
+                        .whereEqualTo("category", category)
+                        .orderBy(selectedOption, Query.Direction.DESCENDING);
             }
-        });
-    }
+            query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot snapshot,
+                                    @Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.d("error", e.toString());
+                        return;
+                    }
 
+                    // Convert query snapshot to a list of chats
+                    commodities = snapshot.toObjects(Commodity.class);
+                    mAdapter = new MyAdapter(commodities);
+                    mAdapter.notifyDataSetChanged();
+                    recyclerview.setAdapter(mAdapter);
+                    // Update UI
+                    // ...
+                }
+            });
+        }
+    }
 }

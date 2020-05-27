@@ -16,4 +16,10 @@
         android:stretchMode="columnWidth"
         android:gravity="center">
     </GridView>
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scrollbarSize="10dp"
+        android:layout_gravity="center"/>
 </FrameLayout>

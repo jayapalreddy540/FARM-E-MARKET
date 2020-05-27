@@ -74,6 +74,8 @@ public class RegisterActivity extends AppCompatActivity {
                 else{
                     loadingProgressBar.setVisibility(View.VISIBLE);
                     Log.d(TAG,"email : "+email);
+
+                    /* Firebase connection */
                     mAuth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override

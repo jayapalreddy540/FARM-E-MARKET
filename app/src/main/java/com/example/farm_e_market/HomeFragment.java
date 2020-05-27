@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -28,12 +29,16 @@ public class HomeFragment extends Fragment {
     GridView simpleGrid;
     int logos[] = {R.drawable.agricultural_crops, R.drawable.organic_vegetables, R.drawable.seeds, R.drawable.dairy_products,
             R.drawable.flowers, R.drawable.fruits, R.drawable.plants, R.drawable.poultry};
+
     ArrayList<String> Categories;
+    private ProgressBar progressBar;
     String[] category;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_home, container, false);
+        progressBar = (ProgressBar)root.findViewById(R.id.loading);
+        progressBar.setVisibility(View.VISIBLE);
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -56,6 +61,7 @@ public class HomeFragment extends Fragment {
                             // Create an object of CustomAdapter and set Adapter to GirdView
                             CustomAdapter customAdapter = new CustomAdapter(getContext(), logos,category);
                             simpleGrid.setAdapter(customAdapter);
+                            progressBar.setVisibility(View.GONE);
                             // implement setOnItemClickListener event on GridView
                             simpleGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
@@ -70,7 +76,7 @@ public class HomeFragment extends Fragment {
                                     editor.apply();
 
                                     final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                                    ft.replace(R.id.nav_host_fragment, new GalleryFragment(), "NewFragmentTag");
+                                    ft.replace(R.id.nav_host_fragment, new GalleryFragment(), "NewFragm");
                                     ft.addToBackStack(null);
                                     ft.commit();
 

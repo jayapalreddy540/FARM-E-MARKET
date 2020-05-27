@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -16,6 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,6 +56,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
@@ -103,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
                                     ||Integer.parseInt(app_version_code) >pInfo.versionCode ) {
                                     Log.d("Update Message : ", "App Update Available");
                                     Toast.makeText(MainActivity.this, "App Update Available", Toast.LENGTH_SHORT).show();
+
                                     try {
                                         FirebaseStorage storage = FirebaseStorage.getInstance();
                                         StorageReference storageRef = storage.getReferenceFromUrl(app_link);
@@ -157,12 +163,12 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
         });
 
 
-
         /*  END OF APP UPDATE */
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
                 startActivity(intent);
             }
         });
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -201,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_myproducts,
-                R.id.nav_tools, R.id.nav_share, R.id.nav_feedback)
+                R.id.nav_tools, R.id.nav_share)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -210,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
 
        // checkInternetConnection();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -224,7 +232,9 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
         switch (item.getItemId()) {
             case R.id.action_logout:
                 Toast.makeText(MainActivity.this,"Logging Out... ",Toast.LENGTH_SHORT).show();
+
                 FirebaseAuth.getInstance().signOut();
+
                 Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(loginIntent);
                 finish();

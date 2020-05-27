@@ -16,6 +16,8 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
+    <string name="feedback">дравей свят</string>
+
 
     <string name="action_logout">Logout</string>
     <string name="action_version">About</string>

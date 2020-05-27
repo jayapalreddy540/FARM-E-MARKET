@@ -3,9 +3,10 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 exports.sendNotification = functions.firestore.document('data/{userId}/products/{productId}').onCreate((change,context) => {
-    const name = context.params.name;
-    const category = context.params.category;
-    const image=context.params.image;
+    const values=change.data();
+    const name = values.name;
+    const category = values.category;
+    const image=values.image;
     console.log("name : "+name);
 
 

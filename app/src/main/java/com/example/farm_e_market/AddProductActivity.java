@@ -26,7 +26,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
@@ -38,6 +37,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.provider.Settings;
 import android.util.Log;
@@ -47,7 +47,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -84,6 +84,7 @@ public class AddProductActivity extends AppCompatActivity implements LocationLis
     private int price=0;
     private int quantity=0;
     private RequestQueue requestQueue;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +102,11 @@ public class AddProductActivity extends AppCompatActivity implements LocationLis
         imageView=(CircleImageView) findViewById(R.id.image);
         imageButton=(ImageButton) findViewById(R.id.location);
         locationDetails=(EditText)findViewById(R.id.locationText);
+        progressBar = (ProgressBar)findViewById(R.id.load);
+        progressBar.setVisibility(View.GONE);
+        btnAdd.setEnabled(true);
+
+        imageView.setImageResource(R.drawable.ic_menu_camera);
 
         requestQueue= Volley.newRequestQueue(this);
 
@@ -170,43 +176,58 @@ public class AddProductActivity extends AppCompatActivity implements LocationLis
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btnAdd.setEnabled(false);
+                progressBar.setVisibility(View.VISIBLE);
                 String name=nameEditText.getText().toString();
                 if(!priceEditText.getText().toString().equals("")&&!quantityEditText.getText().toString().equals("")) {
                     price = Integer.parseInt(priceEditText.getText().toString());
                     quantity = Integer.parseInt(quantityEditText.getText().toString());
-                }
-                Log.d("AddProductActivity.this","category: "+selectedCategory+"  name : "+name+" price : "+price+"  quantity : "+quantity);
-                Log.d("AddProductActivity.this","latitude : "+latitude+" , longitude : "+longitude + "image : "+ref);
+                    String l[]=locationDetails.getText().toString().split(",");
+                    latitude=Double.parseDouble(l[0]);
+                    longitude=Double.parseDouble(l[1]);
+                    try {
+                        Log.d("AddProductActivity.this", "category: " + selectedCategory + "  name : " + name + " price : " + price + "  quantity : " + quantity);
+                        Log.d("AddProductActivity.this", "latitude : " + latitude + " , longitude : " + longitude + "image : " + ref);
 
-                Product product=new Product(selectedCategory,name,price,quantity,latitude,longitude,ref.toString());
-                if(latitude==0.0 && longitude==0.0){
-                    Toast.makeText(AddProductActivity.this,"Please wait, we are finding your location...",Toast.LENGTH_SHORT).show();
-                }else if(!name.equals("")&&price>0&&quantity>0){
-                    db.collection("data")
-                            .document(currentUser.getUid())
-                            .collection("products")
-                            .add(product)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                                    Toast.makeText(AddProductActivity.this,"Product added successfully..",Toast.LENGTH_SHORT).show();
-                                    Intent intent=new Intent(AddProductActivity.this,MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Error adding document", e);
-                                }
-                            });
+                        Product product = new Product(selectedCategory, name, price, quantity, latitude, longitude, ref.toString());
+                        if (!name.equals("") && price > 0 && quantity > 0 && latitude !=0.0&&longitude!=0.0) {
 
-                }else{
-                    Toast.makeText(AddProductActivity.this,"Please fill all the details",Toast.LENGTH_SHORT).show();
+                            db.collection("data")
+                                    .document(currentUser.getUid())
+                                    .collection("products")
+                                    .add(product)
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                        @Override
+                                        public void onSuccess(DocumentReference documentReference) {
+                                            Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+                                            Toast.makeText(AddProductActivity.this, "Product added successfully..", Toast.LENGTH_SHORT).show();
+                                            progressBar.setVisibility(View.GONE);
+                                                Toast.makeText(AddProductActivity.this,"Please update your Mobile Number",Toast.LENGTH_LONG).show();
+                                                Intent intent=new Intent(AddProductActivity.this,UpdateMobileActivity.class);
+                                                startActivity(intent);
+                                                finish();
+
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            progressBar.setVisibility(View.GONE);
+                                            Log.w(TAG, "Error adding product", e);
+                                        }
+                                    });
+
+                        }
+                    } catch (Exception e) {
+                        progressBar.setVisibility(View.GONE);
+                        Log.e("error", e.getMessage());
+                    }
                 }
-            }
+                else {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(AddProductActivity.this, "Please fill all the details", Toast.LENGTH_SHORT).show();
+                    }
+                }
         });
     }
 

@@ -32,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_login);
 
         emailEditText =(EditText)findViewById(R.id.email);
@@ -39,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton =(Button)findViewById(R.id.btnLogin);
         loadingProgressBar = (ProgressBar)findViewById(R.id.loading);
         registerButton = (Button)findViewById(R.id.btnRegister);
+
         mAuth = FirebaseAuth.getInstance();
 
 
@@ -57,7 +59,9 @@ public class LoginActivity extends AppCompatActivity {
                     snackbar.show();
                 }
                 else {
+                    /* Connecting to Firebase */
                     loadingProgressBar.setVisibility(View.VISIBLE);
+
                     mAuth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -88,7 +92,6 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this, "Authentication failed." + task.getException(),
                                                 Toast.LENGTH_SHORT).show();
                                     }
-
                                 }
                             });
                 }
