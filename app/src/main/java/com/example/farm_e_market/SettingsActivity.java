@@ -1,5 +1,6 @@
 package com.example.farm_e_market;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -7,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -26,7 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_settings);
+        setContentView(R.layout.activity_settings);
 
         name=(TextView)findViewById(R.id.name);
         mobile=(TextView)findViewById(R.id.mobile);
@@ -59,7 +59,9 @@ public class SettingsActivity extends AppCompatActivity {
         updateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent=new Intent(SettingsActivity.this,UpdateMobileActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }

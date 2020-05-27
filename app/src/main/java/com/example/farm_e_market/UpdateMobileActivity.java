@@ -32,7 +32,7 @@ public class UpdateMobileActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.update_mobile_fragment);
+        setContentView(R.layout.update_mobile_activity);
 
         mobileEditText=(EditText)findViewById(R.id.mobile);
         update=(Button)findViewById(R.id.update);
